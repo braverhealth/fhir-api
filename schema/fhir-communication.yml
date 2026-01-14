@@ -1,0 +1,1000 @@
+openapi: 3.1.0
+info:
+  title: FHIR R4B Communication Resource API
+  version: 1.0.0
+  description: >-
+    API for managing FHIR R4B Communication resources. A Communication resource
+    is a record of information being transmitted from a sender to a receiver.
+
+
+    ## Use Cases
+
+    - A reminder or alert delivered to a responsible provider
+    - A recorded notification from the nurse to the on-call physician
+    - A notification to a public health agency of a reportable condition
+    - Patient educational material sent by a provider to a patient
+    - Delivery status of lab results to ordering physician
+
+
+    ## FHIR Specification
+
+    Based on FHIR R4B (v4.3.0) Communication resource.
+    See: https://www.hl7.org/fhir/R4B/communication.html
+
+
+    ## Security Model
+
+    The API uses JWT-based authentication. Each request must include a valid JWT
+    in the Authorization header:
+
+    ```
+    Authorization: Bearer <JWT>
+    ```
+servers:
+  - url: <À préciser prochainement>
+    description: Production
+  - url: <À préciser prochainement>
+    description: Sandbox
+tags:
+  - name: Communication
+    description: FHIR Communication resource operations
+    externalDocs:
+      description: FHIR R4B Communication Resource Specification
+      url: https://www.hl7.org/fhir/R4B/communication.html
+security:
+  - bearerAuth: []
+paths:
+  /Communication:
+    get:
+      tags:
+        - Communication
+      summary: Search for Communication resources
+      description: Search for Communication resources with optional filters.
+      operationId: searchCommunications
+      parameters:
+        - $ref: '#/components/parameters/SearchIdentifier'
+        - $ref: '#/components/parameters/SearchStatus'
+        - $ref: '#/components/parameters/SearchCategory'
+        - $ref: '#/components/parameters/SearchPatient'
+        - $ref: '#/components/parameters/SearchSubject'
+        - $ref: '#/components/parameters/SearchSender'
+        - $ref: '#/components/parameters/SearchRecipient'
+        - $ref: '#/components/parameters/SearchEncounter'
+        - $ref: '#/components/parameters/SearchSent'
+        - $ref: '#/components/parameters/SearchReceived'
+        - $ref: '#/components/parameters/SearchMedium'
+        - $ref: '#/components/parameters/SearchBasedOn'
+        - $ref: '#/components/parameters/SearchPartOf'
+        - $ref: '#/components/parameters/SearchInstantiatesCanonical'
+        - $ref: '#/components/parameters/SearchInstantiatesUri'
+        - $ref: '#/components/parameters/Count'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: Bundle of Communication resources
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+        '400':
+          description: Invalid search parameters
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    post:
+      tags:
+        - Communication
+      summary: Create a new Communication resource
+      description: Create a new Communication resource.
+      operationId: createCommunication
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/Communication'
+      responses:
+        '201':
+          description: Communication created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the created resource
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the created resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Communication'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+  /Communication/{id}:
+    get:
+      tags:
+        - Communication
+      summary: Read a Communication resource
+      description: Read a specific Communication resource by its ID.
+      operationId: readCommunication
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Communication resource
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Communication'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Communication not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    put:
+      tags:
+        - Communication
+      summary: Update a Communication resource
+      description: Update an existing Communication resource.
+      operationId: updateCommunication
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/Communication'
+      responses:
+        '200':
+          description: Communication updated
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the updated resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Communication'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Communication not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '409':
+          description: Version conflict
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    delete:
+      tags:
+        - Communication
+      summary: Delete a Communication resource
+      description: Delete an existing Communication resource.
+      operationId: deleteCommunication
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '204':
+          description: Communication deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Communication not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+  /Communication/{id}/_history:
+    get:
+      tags:
+        - Communication
+      summary: Get history of a Communication resource
+      description: Retrieve the version history of a specific Communication resource.
+      operationId: historyCommunication
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+        - $ref: '#/components/parameters/Count'
+        - $ref: '#/components/parameters/Since'
+      responses:
+        '200':
+          description: Bundle of historical versions
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Communication not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+  /Communication/{id}/_history/{vid}:
+    get:
+      tags:
+        - Communication
+      summary: Read a specific version of a Communication resource
+      description: Read a specific historical version of a Communication resource.
+      operationId: vreadCommunication
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+        - $ref: '#/components/parameters/VersionId'
+      responses:
+        '200':
+          description: Communication resource at specified version
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Communication'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Communication or version not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication
+
+  parameters:
+    ResourceId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The logical ID of the resource
+
+    VersionId:
+      name: vid
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The version ID of the resource
+
+    IfMatch:
+      name: If-Match
+      in: header
+      required: false
+      schema:
+        type: string
+      description: ETag for optimistic locking
+
+    Count:
+      name: _count
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+      description: Number of results per page
+
+    Offset:
+      name: _offset
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      description: Offset for pagination
+
+    Since:
+      name: _since
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+      description: Only include resource versions created after this instant
+
+    SearchIdentifier:
+      name: identifier
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Unique identifier for the Communication
+
+    SearchStatus:
+      name: status
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - preparation
+          - in-progress
+          - not-done
+          - on-hold
+          - stopped
+          - completed
+          - entered-in-error
+          - unknown
+      description: Status of the communication
+
+    SearchCategory:
+      name: category
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Message category (CodeableConcept token)
+
+    SearchPatient:
+      name: patient
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Focus of message (Patient reference)
+
+    SearchSubject:
+      name: subject
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Focus of message (Patient or Group reference)
+
+    SearchSender:
+      name: sender
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Message sender reference
+
+    SearchRecipient:
+      name: recipient
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Message recipient reference
+
+    SearchEncounter:
+      name: encounter
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Encounter reference
+
+    SearchSent:
+      name: sent
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+      description: When sent (supports prefixes eq, ne, lt, gt, le, ge)
+
+    SearchReceived:
+      name: received
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+      description: When received (supports prefixes eq, ne, lt, gt, le, ge)
+
+    SearchMedium:
+      name: medium
+      in: query
+      required: false
+      schema:
+        type: string
+      description: A channel of communication (CodeableConcept token)
+
+    SearchBasedOn:
+      name: based-on
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Request fulfilled by this communication
+
+    SearchPartOf:
+      name: part-of
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Part of this action
+
+    SearchInstantiatesCanonical:
+      name: instantiates-canonical
+      in: query
+      required: false
+      schema:
+        type: string
+        format: uri
+      description: Instantiates FHIR protocol or definition (canonical reference)
+
+    SearchInstantiatesUri:
+      name: instantiates-uri
+      in: query
+      required: false
+      schema:
+        type: string
+        format: uri
+      description: Instantiates external protocol or definition (URI)
+
+  schemas:
+    # FHIR Primitive Types
+    uri:
+      type: string
+      format: uri
+      description: A Uniform Resource Identifier
+
+    code:
+      type: string
+      description: A string pattern matching a defined set of values
+
+    dateTime:
+      type: string
+      format: date-time
+      description: A date, date-time or partial date
+
+    instant:
+      type: string
+      format: date-time
+      description: An instant in time
+
+    # FHIR Complex Types
+    Meta:
+      type: object
+      description: Metadata about a resource
+      properties:
+        versionId:
+          type: string
+          description: Version specific identifier
+        lastUpdated:
+          $ref: '#/components/schemas/instant'
+        source:
+          $ref: '#/components/schemas/uri'
+        profile:
+          type: array
+          items:
+            $ref: '#/components/schemas/uri'
+        security:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coding'
+        tag:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coding'
+
+    Identifier:
+      type: object
+      description: An identifier intended for computation
+      properties:
+        use:
+          type: string
+          enum: [usual, official, temp, secondary, old]
+        type:
+          $ref: '#/components/schemas/CodeableConcept'
+        system:
+          $ref: '#/components/schemas/uri'
+        value:
+          type: string
+        period:
+          $ref: '#/components/schemas/Period'
+        assigner:
+          $ref: '#/components/schemas/Reference'
+
+    Coding:
+      type: object
+      description: A reference to a code defined by a terminology system
+      properties:
+        system:
+          $ref: '#/components/schemas/uri'
+        version:
+          type: string
+        code:
+          $ref: '#/components/schemas/code'
+        display:
+          type: string
+        userSelected:
+          type: boolean
+
+    CodeableConcept:
+      type: object
+      description: Concept - reference to a terminology or just text
+      properties:
+        coding:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coding'
+        text:
+          type: string
+
+    Period:
+      type: object
+      description: Time range defined by start and end date/time
+      properties:
+        start:
+          $ref: '#/components/schemas/dateTime'
+        end:
+          $ref: '#/components/schemas/dateTime'
+
+    Reference:
+      type: object
+      description: A reference from one resource to another
+      properties:
+        reference:
+          type: string
+          description: Literal reference, Relative, internal or absolute URL
+        type:
+          $ref: '#/components/schemas/uri'
+        identifier:
+          $ref: '#/components/schemas/Identifier'
+        display:
+          type: string
+
+    Annotation:
+      type: object
+      description: Text node with attribution
+      properties:
+        authorReference:
+          $ref: '#/components/schemas/Reference'
+        authorString:
+          type: string
+        time:
+          $ref: '#/components/schemas/dateTime'
+        text:
+          type: string
+          description: The annotation text content
+      required:
+        - text
+
+    Attachment:
+      type: object
+      description: Content in a format defined elsewhere
+      properties:
+        contentType:
+          $ref: '#/components/schemas/code'
+        language:
+          $ref: '#/components/schemas/code'
+        data:
+          type: string
+          format: byte
+          description: Data inline, base64ed
+        url:
+          $ref: '#/components/schemas/uri'
+        size:
+          type: integer
+          description: Number of bytes of content
+        hash:
+          type: string
+          format: byte
+          description: Hash of the data (sha-1, base64ed)
+        title:
+          type: string
+        creation:
+          $ref: '#/components/schemas/dateTime'
+
+    # Communication Payload
+    CommunicationPayload:
+      type: object
+      description: Message payload content
+      properties:
+        contentString:
+          type: string
+          description: Message part content as string
+        contentAttachment:
+          $ref: '#/components/schemas/Attachment'
+        contentReference:
+          $ref: '#/components/schemas/Reference'
+      oneOf:
+        - required: [contentString]
+        - required: [contentAttachment]
+        - required: [contentReference]
+
+    # Main Communication Resource
+    Communication:
+      type: object
+      description: >-
+        A record of information transmitted from a sender to a receiver.
+        FHIR R4B Communication resource.
+      required:
+        - resourceType
+        - status
+      properties:
+        resourceType:
+          type: string
+          const: Communication
+          description: Type of resource
+        id:
+          type: string
+          description: Logical id of this artifact
+        meta:
+          $ref: '#/components/schemas/Meta'
+        implicitRules:
+          $ref: '#/components/schemas/uri'
+        language:
+          $ref: '#/components/schemas/code'
+        text:
+          $ref: '#/components/schemas/Narrative'
+        identifier:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+          description: Unique identifier
+        instantiatesCanonical:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: Instantiates FHIR protocol or definition
+        instantiatesUri:
+          type: array
+          items:
+            $ref: '#/components/schemas/uri'
+          description: Instantiates external protocol or definition
+        basedOn:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Request fulfilled by this communication
+        partOf:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Part of this action
+        inResponseTo:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Reply to (Communication reference)
+        status:
+          type: string
+          enum:
+            - preparation
+            - in-progress
+            - not-done
+            - on-hold
+            - stopped
+            - completed
+            - entered-in-error
+            - unknown
+          description: >-
+            preparation | in-progress | not-done | on-hold | stopped |
+            completed | entered-in-error | unknown
+        statusReason:
+          $ref: '#/components/schemas/CodeableConcept'
+        category:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Message category
+        priority:
+          type: string
+          enum:
+            - routine
+            - urgent
+            - asap
+            - stat
+          description: routine | urgent | asap | stat
+        medium:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: A channel of communication
+        subject:
+          $ref: '#/components/schemas/Reference'
+        topic:
+          $ref: '#/components/schemas/CodeableConcept'
+        about:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Resources that pertain to this communication
+        encounter:
+          $ref: '#/components/schemas/Reference'
+        sent:
+          $ref: '#/components/schemas/dateTime'
+        received:
+          $ref: '#/components/schemas/dateTime'
+        recipient:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: >-
+            Message recipient (Device | Organization | Patient | Practitioner |
+            PractitionerRole | RelatedPerson | Group | CareTeam | HealthcareService)
+        sender:
+          $ref: '#/components/schemas/Reference'
+        reasonCode:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Indication for message
+        reasonReference:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Why was communication done?
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommunicationPayload'
+          description: Message payload
+        note:
+          type: array
+          items:
+            $ref: '#/components/schemas/Annotation'
+          description: Comments made about the communication
+
+    # Narrative for human-readable text
+    Narrative:
+      type: object
+      description: Human-readable summary of the resource
+      required:
+        - status
+        - div
+      properties:
+        status:
+          type: string
+          enum:
+            - generated
+            - extensions
+            - additional
+            - empty
+          description: generated | extensions | additional | empty
+        div:
+          type: string
+          description: Limited xhtml content (escaped HTML)
+
+    # Bundle for search results
+    Bundle:
+      type: object
+      description: Contains a collection of resources
+      required:
+        - resourceType
+        - type
+      properties:
+        resourceType:
+          type: string
+          const: Bundle
+        id:
+          type: string
+        meta:
+          $ref: '#/components/schemas/Meta'
+        type:
+          type: string
+          enum:
+            - document
+            - message
+            - transaction
+            - transaction-response
+            - batch
+            - batch-response
+            - history
+            - searchset
+            - collection
+        timestamp:
+          $ref: '#/components/schemas/instant'
+        total:
+          type: integer
+          description: Total number of matching resources (if search)
+        link:
+          type: array
+          items:
+            type: object
+            required:
+              - relation
+              - url
+            properties:
+              relation:
+                type: string
+                description: >-
+                  self | first | previous | next | last
+              url:
+                $ref: '#/components/schemas/uri'
+        entry:
+          type: array
+          items:
+            type: object
+            properties:
+              fullUrl:
+                $ref: '#/components/schemas/uri'
+              resource:
+                $ref: '#/components/schemas/Communication'
+              search:
+                type: object
+                properties:
+                  mode:
+                    type: string
+                    enum: [match, include, outcome]
+                  score:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+              request:
+                type: object
+                properties:
+                  method:
+                    type: string
+                    enum: [GET, HEAD, POST, PUT, DELETE, PATCH]
+                  url:
+                    $ref: '#/components/schemas/uri'
+              response:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  location:
+                    $ref: '#/components/schemas/uri'
+                  etag:
+                    type: string
+                  lastModified:
+                    $ref: '#/components/schemas/instant'
+
+    # OperationOutcome for errors
+    OperationOutcome:
+      type: object
+      description: Information about the outcome of an operation
+      required:
+        - resourceType
+        - issue
+      properties:
+        resourceType:
+          type: string
+          const: OperationOutcome
+        id:
+          type: string
+        meta:
+          $ref: '#/components/schemas/Meta'
+        issue:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - severity
+              - code
+            properties:
+              severity:
+                type: string
+                enum:
+                  - fatal
+                  - error
+                  - warning
+                  - information
+                description: fatal | error | warning | information
+              code:
+                type: string
+                enum:
+                  - invalid
+                  - structure
+                  - required
+                  - value
+                  - invariant
+                  - security
+                  - login
+                  - unknown
+                  - expired
+                  - forbidden
+                  - suppressed
+                  - processing
+                  - not-supported
+                  - duplicate
+                  - multiple-matches
+                  - not-found
+                  - deleted
+                  - too-long
+                  - code-invalid
+                  - extension
+                  - too-costly
+                  - business-rule
+                  - conflict
+                  - transient
+                  - lock-error
+                  - no-store
+                  - exception
+                  - timeout
+                  - incomplete
+                  - throttled
+                  - informational
+                description: Error or warning code
+              details:
+                $ref: '#/components/schemas/CodeableConcept'
+              diagnostics:
+                type: string
+                description: Additional diagnostic information
+              location:
+                type: array
+                items:
+                  type: string
+                description: Deprecated - use expression
+              expression:
+                type: array
+                items:
+                  type: string
+                description: FHIRPath of element(s) related to issue
+

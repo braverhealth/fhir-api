@@ -1,0 +1,3115 @@
+openapi: 3.1.0
+info:
+  title: pan-Canadian Care Service Directory (CA:CSD) API
+  version: 1.0.0
+  description: >-
+    API for managing care services directory resources based on the pan-Canadian
+    Care Service Directory (CA:CSD) specification, derived from IHE mCSD
+    (Mobile Care Services Discovery) v4.0.0.
+
+
+    ## Overview
+
+    CA:CSD supports discovery and management of care services resources including
+    organizations, locations, practitioners, healthcare services, and endpoints.
+    It enables healthcare applications to discover healthcare providers and
+    services across jurisdictions.
+
+
+    ## FHIR Specification
+
+    Based on FHIR R4 (v4.0.1).
+    See: https://www.hl7.org/fhir/R4/
+
+
+    ## Security Model
+
+    The API uses JWT-based authentication. Each request must include a valid JWT
+    in the Authorization header:
+
+    ```
+    Authorization: Bearer <JWT>
+    ```
+servers:
+  - url: <À préciser prochainement>
+    description: Production
+  - url: <À préciser prochainement>
+    description: Sandbox
+tags:
+  - name: Organization
+    description: FHIR Organization resource operations
+    externalDocs:
+      description: FHIR R4 Organization Resource Specification
+      url: https://www.hl7.org/fhir/R4/organization.html
+  - name: Location
+    description: FHIR Location resource operations
+    externalDocs:
+      description: FHIR R4 Location Resource Specification
+      url: https://www.hl7.org/fhir/R4/location.html
+  - name: Practitioner
+    description: FHIR Practitioner resource operations
+    externalDocs:
+      description: FHIR R4 Practitioner Resource Specification
+      url: https://www.hl7.org/fhir/R4/practitioner.html
+  - name: PractitionerRole
+    description: FHIR PractitionerRole resource operations
+    externalDocs:
+      description: FHIR R4 PractitionerRole Resource Specification
+      url: https://www.hl7.org/fhir/R4/practitionerrole.html
+  - name: HealthcareService
+    description: FHIR HealthcareService resource operations
+    externalDocs:
+      description: FHIR R4 HealthcareService Resource Specification
+      url: https://www.hl7.org/fhir/R4/healthcareservice.html
+  - name: Endpoint
+    description: FHIR Endpoint resource operations
+    externalDocs:
+      description: FHIR R4 Endpoint Resource Specification
+      url: https://www.hl7.org/fhir/R4/endpoint.html
+  - name: OrganizationAffiliation
+    description: FHIR OrganizationAffiliation resource operations
+    externalDocs:
+      description: FHIR R4 OrganizationAffiliation Resource Specification
+      url: https://www.hl7.org/fhir/R4/organizationaffiliation.html
+security:
+  - bearerAuth: []
+paths:
+  /Organization:
+    get:
+      tags:
+        - Organization
+      summary: Search for Organization resources
+      description: Search for Organization resources with optional filters.
+      operationId: searchOrganizations
+      parameters:
+        - $ref: '#/components/parameters/SearchId'
+        - $ref: '#/components/parameters/SearchIdentifier'
+        - $ref: '#/components/parameters/SearchName'
+        - $ref: '#/components/parameters/SearchType'
+        - $ref: '#/components/parameters/SearchPartOf'
+        - $ref: '#/components/parameters/SearchActive'
+        - $ref: '#/components/parameters/SearchAddress'
+        - $ref: '#/components/parameters/SearchAddressCity'
+        - $ref: '#/components/parameters/SearchAddressState'
+        - $ref: '#/components/parameters/SearchAddressPostalcode'
+        - $ref: '#/components/parameters/SearchAddressCountry'
+        - $ref: '#/components/parameters/SearchEndpoint'
+        - $ref: '#/components/parameters/Count'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: Bundle of Organization resources
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+        '400':
+          description: Invalid search parameters
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    post:
+      tags:
+        - Organization
+      summary: Create a new Organization resource
+      description: Create a new Organization resource.
+      operationId: createOrganization
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+      responses:
+        '201':
+          description: Organization created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the created resource
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the created resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+  /Organization/{id}:
+    get:
+      tags:
+        - Organization
+      summary: Read an Organization resource
+      description: Read a specific Organization resource by its ID.
+      operationId: readOrganization
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Organization resource
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Organization not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    put:
+      tags:
+        - Organization
+      summary: Update an Organization resource
+      description: Update an existing Organization resource.
+      operationId: updateOrganization
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+      responses:
+        '200':
+          description: Organization updated
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the updated resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Organization not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '409':
+          description: Version conflict
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    delete:
+      tags:
+        - Organization
+      summary: Delete an Organization resource
+      description: Delete an existing Organization resource.
+      operationId: deleteOrganization
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '204':
+          description: Organization deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Organization not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+
+  /Location:
+    get:
+      tags:
+        - Location
+      summary: Search for Location resources
+      description: Search for Location resources with optional filters.
+      operationId: searchLocations
+      parameters:
+        - $ref: '#/components/parameters/SearchId'
+        - $ref: '#/components/parameters/SearchIdentifier'
+        - $ref: '#/components/parameters/SearchName'
+        - $ref: '#/components/parameters/SearchLocationType'
+        - $ref: '#/components/parameters/SearchLocationStatus'
+        - $ref: '#/components/parameters/SearchOrganization'
+        - $ref: '#/components/parameters/SearchPartOf'
+        - $ref: '#/components/parameters/SearchAddress'
+        - $ref: '#/components/parameters/SearchAddressCity'
+        - $ref: '#/components/parameters/SearchAddressState'
+        - $ref: '#/components/parameters/SearchAddressPostalcode'
+        - $ref: '#/components/parameters/SearchAddressCountry'
+        - $ref: '#/components/parameters/SearchNear'
+        - $ref: '#/components/parameters/SearchNearDistance'
+        - $ref: '#/components/parameters/Count'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: Bundle of Location resources
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+        '400':
+          description: Invalid search parameters
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    post:
+      tags:
+        - Location
+      summary: Create a new Location resource
+      description: Create a new Location resource.
+      operationId: createLocation
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      responses:
+        '201':
+          description: Location created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the created resource
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the created resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+  /Location/{id}:
+    get:
+      tags:
+        - Location
+      summary: Read a Location resource
+      description: Read a specific Location resource by its ID.
+      operationId: readLocation
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Location resource
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Location not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    put:
+      tags:
+        - Location
+      summary: Update a Location resource
+      description: Update an existing Location resource.
+      operationId: updateLocation
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      responses:
+        '200':
+          description: Location updated
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the updated resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Location not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '409':
+          description: Version conflict
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    delete:
+      tags:
+        - Location
+      summary: Delete a Location resource
+      description: Delete an existing Location resource.
+      operationId: deleteLocation
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '204':
+          description: Location deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Location not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+
+  /Practitioner:
+    get:
+      tags:
+        - Practitioner
+      summary: Search for Practitioner resources
+      description: Search for Practitioner resources with optional filters.
+      operationId: searchPractitioners
+      parameters:
+        - $ref: '#/components/parameters/SearchId'
+        - $ref: '#/components/parameters/SearchIdentifier'
+        - $ref: '#/components/parameters/SearchName'
+        - $ref: '#/components/parameters/SearchFamily'
+        - $ref: '#/components/parameters/SearchGiven'
+        - $ref: '#/components/parameters/SearchActive'
+        - $ref: '#/components/parameters/SearchAddress'
+        - $ref: '#/components/parameters/SearchAddressCity'
+        - $ref: '#/components/parameters/SearchAddressState'
+        - $ref: '#/components/parameters/SearchAddressPostalcode'
+        - $ref: '#/components/parameters/SearchAddressCountry'
+        - $ref: '#/components/parameters/SearchCommunication'
+        - $ref: '#/components/parameters/SearchEmail'
+        - $ref: '#/components/parameters/SearchPhone'
+        - $ref: '#/components/parameters/SearchTelecom'
+        - $ref: '#/components/parameters/SearchGender'
+        - $ref: '#/components/parameters/Count'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: Bundle of Practitioner resources
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+        '400':
+          description: Invalid search parameters
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    post:
+      tags:
+        - Practitioner
+      summary: Create a new Practitioner resource
+      description: Create a new Practitioner resource.
+      operationId: createPractitioner
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/Practitioner'
+      responses:
+        '201':
+          description: Practitioner created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the created resource
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the created resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Practitioner'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+  /Practitioner/{id}:
+    get:
+      tags:
+        - Practitioner
+      summary: Read a Practitioner resource
+      description: Read a specific Practitioner resource by its ID.
+      operationId: readPractitioner
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Practitioner resource
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Practitioner'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Practitioner not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    put:
+      tags:
+        - Practitioner
+      summary: Update a Practitioner resource
+      description: Update an existing Practitioner resource.
+      operationId: updatePractitioner
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/Practitioner'
+      responses:
+        '200':
+          description: Practitioner updated
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the updated resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Practitioner'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Practitioner not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '409':
+          description: Version conflict
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    delete:
+      tags:
+        - Practitioner
+      summary: Delete a Practitioner resource
+      description: Delete an existing Practitioner resource.
+      operationId: deletePractitioner
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '204':
+          description: Practitioner deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Practitioner not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+
+  /PractitionerRole:
+    get:
+      tags:
+        - PractitionerRole
+      summary: Search for PractitionerRole resources
+      description: >-
+        Search for PractitionerRole resources with optional filters.
+        PractitionerRole links Practitioner to Organization, Location, and HealthcareService.
+      operationId: searchPractitionerRoles
+      parameters:
+        - $ref: '#/components/parameters/SearchId'
+        - $ref: '#/components/parameters/SearchIdentifier'
+        - $ref: '#/components/parameters/SearchPractitioner'
+        - $ref: '#/components/parameters/SearchOrganization'
+        - $ref: '#/components/parameters/SearchLocation'
+        - $ref: '#/components/parameters/SearchRole'
+        - $ref: '#/components/parameters/SearchSpecialty'
+        - $ref: '#/components/parameters/SearchService'
+        - $ref: '#/components/parameters/SearchActive'
+        - $ref: '#/components/parameters/SearchDate'
+        - $ref: '#/components/parameters/SearchEmail'
+        - $ref: '#/components/parameters/SearchPhone'
+        - $ref: '#/components/parameters/SearchTelecom'
+        - $ref: '#/components/parameters/SearchEndpoint'
+        - $ref: '#/components/parameters/Count'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: Bundle of PractitionerRole resources
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+        '400':
+          description: Invalid search parameters
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    post:
+      tags:
+        - PractitionerRole
+      summary: Create a new PractitionerRole resource
+      description: Create a new PractitionerRole resource.
+      operationId: createPractitionerRole
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/PractitionerRole'
+      responses:
+        '201':
+          description: PractitionerRole created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the created resource
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the created resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/PractitionerRole'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+  /PractitionerRole/{id}:
+    get:
+      tags:
+        - PractitionerRole
+      summary: Read a PractitionerRole resource
+      description: Read a specific PractitionerRole resource by its ID.
+      operationId: readPractitionerRole
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: PractitionerRole resource
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/PractitionerRole'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: PractitionerRole not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    put:
+      tags:
+        - PractitionerRole
+      summary: Update a PractitionerRole resource
+      description: Update an existing PractitionerRole resource.
+      operationId: updatePractitionerRole
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/PractitionerRole'
+      responses:
+        '200':
+          description: PractitionerRole updated
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the updated resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/PractitionerRole'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: PractitionerRole not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '409':
+          description: Version conflict
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    delete:
+      tags:
+        - PractitionerRole
+      summary: Delete a PractitionerRole resource
+      description: Delete an existing PractitionerRole resource.
+      operationId: deletePractitionerRole
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '204':
+          description: PractitionerRole deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: PractitionerRole not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+
+  /HealthcareService:
+    get:
+      tags:
+        - HealthcareService
+      summary: Search for HealthcareService resources
+      description: >-
+        Search for HealthcareService resources with optional filters.
+        HealthcareService represents healthcare services offered at a Location by an Organization.
+      operationId: searchHealthcareServices
+      parameters:
+        - $ref: '#/components/parameters/SearchId'
+        - $ref: '#/components/parameters/SearchIdentifier'
+        - $ref: '#/components/parameters/SearchName'
+        - $ref: '#/components/parameters/SearchActive'
+        - $ref: '#/components/parameters/SearchOrganization'
+        - $ref: '#/components/parameters/SearchLocation'
+        - $ref: '#/components/parameters/SearchCategory'
+        - $ref: '#/components/parameters/SearchServiceType'
+        - $ref: '#/components/parameters/SearchSpecialty'
+        - $ref: '#/components/parameters/SearchCharacteristic'
+        - $ref: '#/components/parameters/SearchProgram'
+        - $ref: '#/components/parameters/SearchCoverageArea'
+        - $ref: '#/components/parameters/SearchEndpoint'
+        - $ref: '#/components/parameters/SearchServiceCategory'
+        - $ref: '#/components/parameters/Count'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: Bundle of HealthcareService resources
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+        '400':
+          description: Invalid search parameters
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    post:
+      tags:
+        - HealthcareService
+      summary: Create a new HealthcareService resource
+      description: Create a new HealthcareService resource.
+      operationId: createHealthcareService
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/HealthcareService'
+      responses:
+        '201':
+          description: HealthcareService created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the created resource
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the created resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/HealthcareService'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+  /HealthcareService/{id}:
+    get:
+      tags:
+        - HealthcareService
+      summary: Read a HealthcareService resource
+      description: Read a specific HealthcareService resource by its ID.
+      operationId: readHealthcareService
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: HealthcareService resource
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/HealthcareService'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: HealthcareService not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    put:
+      tags:
+        - HealthcareService
+      summary: Update a HealthcareService resource
+      description: Update an existing HealthcareService resource.
+      operationId: updateHealthcareService
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/HealthcareService'
+      responses:
+        '200':
+          description: HealthcareService updated
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the updated resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/HealthcareService'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: HealthcareService not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '409':
+          description: Version conflict
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    delete:
+      tags:
+        - HealthcareService
+      summary: Delete a HealthcareService resource
+      description: Delete an existing HealthcareService resource.
+      operationId: deleteHealthcareService
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '204':
+          description: HealthcareService deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: HealthcareService not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+
+  /Endpoint:
+    get:
+      tags:
+        - Endpoint
+      summary: Search for Endpoint resources
+      description: >-
+        Search for Endpoint resources with optional filters.
+        Endpoint represents an electronic endpoint for data exchange (FHIR server, IHE web services, etc.)
+      operationId: searchEndpoints
+      parameters:
+        - $ref: '#/components/parameters/SearchId'
+        - $ref: '#/components/parameters/SearchIdentifier'
+        - $ref: '#/components/parameters/SearchName'
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - active
+              - suspended
+              - error
+              - off
+              - entered-in-error
+              - test
+          description: Status of the endpoint (active, suspended, error, off, entered-in-error, test)
+        - $ref: '#/components/parameters/SearchOrganization'
+        - name: connection-type
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Protocol/profile/standard the endpoint supports
+        - name: payload-type
+          in: query
+          required: false
+          schema:
+            type: string
+          description: The type of content that may be used at this endpoint
+        - $ref: '#/components/parameters/Count'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: Bundle of Endpoint resources
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+        '400':
+          description: Invalid search parameters
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    post:
+      tags:
+        - Endpoint
+      summary: Create a new Endpoint resource
+      description: Create a new Endpoint resource.
+      operationId: createEndpoint
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/Endpoint'
+      responses:
+        '201':
+          description: Endpoint created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the created resource
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the created resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Endpoint'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+  /Endpoint/{id}:
+    get:
+      tags:
+        - Endpoint
+      summary: Read an Endpoint resource
+      description: Read a specific Endpoint resource by its ID.
+      operationId: readEndpoint
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: Endpoint resource
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Endpoint'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Endpoint not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    put:
+      tags:
+        - Endpoint
+      summary: Update an Endpoint resource
+      description: Update an existing Endpoint resource.
+      operationId: updateEndpoint
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/Endpoint'
+      responses:
+        '200':
+          description: Endpoint updated
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the updated resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Endpoint'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Endpoint not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '409':
+          description: Version conflict
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    delete:
+      tags:
+        - Endpoint
+      summary: Delete an Endpoint resource
+      description: Delete an existing Endpoint resource.
+      operationId: deleteEndpoint
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '204':
+          description: Endpoint deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: Endpoint not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+
+  /OrganizationAffiliation:
+    get:
+      tags:
+        - OrganizationAffiliation
+      summary: Search for OrganizationAffiliation resources
+      description: >-
+        Search for OrganizationAffiliation resources with optional filters.
+        OrganizationAffiliation represents non-hierarchical relationships between organizations
+        (e.g., HIE membership, supply chains, administrative reporting structures).
+      operationId: searchOrganizationAffiliations
+      parameters:
+        - $ref: '#/components/parameters/SearchId'
+        - $ref: '#/components/parameters/SearchIdentifier'
+        - $ref: '#/components/parameters/SearchActive'
+        - $ref: '#/components/parameters/SearchOrganization'
+        - $ref: '#/components/parameters/SearchParticipatingOrganization'
+        - $ref: '#/components/parameters/SearchRole'
+        - $ref: '#/components/parameters/SearchSpecialty'
+        - $ref: '#/components/parameters/SearchLocation'
+        - $ref: '#/components/parameters/SearchService'
+        - $ref: '#/components/parameters/SearchNetwork'
+        - $ref: '#/components/parameters/SearchDate'
+        - $ref: '#/components/parameters/SearchEmail'
+        - $ref: '#/components/parameters/SearchPhone'
+        - $ref: '#/components/parameters/SearchTelecom'
+        - $ref: '#/components/parameters/SearchEndpoint'
+        - $ref: '#/components/parameters/Count'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: Bundle of OrganizationAffiliation resources
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/Bundle'
+        '400':
+          description: Invalid search parameters
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    post:
+      tags:
+        - OrganizationAffiliation
+      summary: Create an OrganizationAffiliation resource
+      description: Create a new OrganizationAffiliation resource.
+      operationId: createOrganizationAffiliation
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/OrganizationAffiliation'
+      responses:
+        '201':
+          description: OrganizationAffiliation created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the created resource
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the created resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OrganizationAffiliation'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+  /OrganizationAffiliation/{id}:
+    get:
+      tags:
+        - OrganizationAffiliation
+      summary: Read an OrganizationAffiliation resource
+      description: Read a specific OrganizationAffiliation resource by its ID.
+      operationId: readOrganizationAffiliation
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '200':
+          description: OrganizationAffiliation resource
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OrganizationAffiliation'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: OrganizationAffiliation not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    put:
+      tags:
+        - OrganizationAffiliation
+      summary: Update an OrganizationAffiliation resource
+      description: Update an existing OrganizationAffiliation resource.
+      operationId: updateOrganizationAffiliation
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+        - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema:
+              $ref: '#/components/schemas/OrganizationAffiliation'
+      responses:
+        '200':
+          description: OrganizationAffiliation updated
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Version ID of the updated resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OrganizationAffiliation'
+        '400':
+          description: Invalid resource
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: OrganizationAffiliation not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '409':
+          description: Version conflict
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+    delete:
+      tags:
+        - OrganizationAffiliation
+      summary: Delete an OrganizationAffiliation resource
+      description: Delete an existing OrganizationAffiliation resource.
+      operationId: deleteOrganizationAffiliation
+      parameters:
+        - $ref: '#/components/parameters/ResourceId'
+      responses:
+        '204':
+          description: OrganizationAffiliation deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+        '404':
+          description: OrganizationAffiliation not found
+          content:
+            application/fhir+json:
+              schema:
+                $ref: '#/components/schemas/OperationOutcome'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication
+
+  parameters:
+    ResourceId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The logical ID of the resource
+
+    IfMatch:
+      name: If-Match
+      in: header
+      required: false
+      schema:
+        type: string
+      description: ETag for optimistic locking
+
+    Count:
+      name: _count
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+      description: Number of results per page
+
+    Offset:
+      name: _offset
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      description: Offset for pagination
+
+    SearchId:
+      name: _id
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Logical ID of the resource
+
+    SearchIdentifier:
+      name: identifier
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Identifier for the organization (system|value or value)
+
+    SearchName:
+      name: name
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Name of the organization (partial match supported)
+
+    SearchType:
+      name: type
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Type of organization (CodeableConcept token)
+
+    SearchPartOf:
+      name: partof
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Reference to parent organization
+
+    SearchActive:
+      name: active
+      in: query
+      required: false
+      schema:
+        type: boolean
+      description: Whether the organization is active
+
+    SearchAddress:
+      name: address
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Any part of the address
+
+    SearchAddressCity:
+      name: address-city
+      in: query
+      required: false
+      schema:
+        type: string
+      description: City of the address
+
+    SearchAddressState:
+      name: address-state
+      in: query
+      required: false
+      schema:
+        type: string
+      description: State or province of the address
+
+    SearchAddressPostalcode:
+      name: address-postalcode
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Postal code of the address
+
+    SearchAddressCountry:
+      name: address-country
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Country of the address
+
+    SearchEndpoint:
+      name: endpoint
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Reference to technical endpoint
+
+    SearchLocationType:
+      name: type
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - si
+          - bu
+          - wi
+          - wa
+          - lvl
+          - ro
+          - bd
+          - ve
+          - ho
+          - ca
+          - rd
+          - area
+          - jdn
+      description: >-
+        Type of location (si=Site/Facility, bu=Building, wi=Wing, wa=Ward,
+        lvl=Level, ro=Room, bd=Bed, ve=Vehicle, ho=House, ca=Cabinet,
+        rd=Road, area=Area, jdn=Jurisdiction)
+
+    SearchLocationStatus:
+      name: status
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - active
+          - suspended
+          - inactive
+      description: Status of the location (active, suspended, inactive)
+
+    SearchOrganization:
+      name: organization
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Reference to managing organization
+
+    SearchParticipatingOrganization:
+      name: participating-organization
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Reference to subordinate/affiliated organization (participating organization in the affiliation)
+
+    SearchNetwork:
+      name: network
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Reference to health insurance provider network
+
+    SearchNear:
+      name: near
+      in: query
+      required: false
+      schema:
+        type: string
+      description: >-
+        Search for locations near a specific position (latitude|longitude or
+        latitude|longitude|distance|units)
+
+    SearchNearDistance:
+      name: near-distance
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Maximum distance from the near position (e.g., 10|km, 5|mi)
+
+    SearchFamily:
+      name: family
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Family name of the practitioner
+
+    SearchGiven:
+      name: given
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Given name of the practitioner
+
+    SearchCommunication:
+      name: communication
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Language that the practitioner can use in communication
+
+    SearchEmail:
+      name: email
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Email address of the practitioner
+
+    SearchPhone:
+      name: phone
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Phone number of the practitioner
+
+    SearchTelecom:
+      name: telecom
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Any contact point (phone, email, etc.) of the practitioner
+
+    SearchGender:
+      name: gender
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - male
+          - female
+          - other
+          - unknown
+      description: Gender of the practitioner (male, female, other, unknown)
+
+    SearchPractitioner:
+      name: practitioner
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Reference to the practitioner
+
+    SearchLocation:
+      name: location
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Reference to the location where the practitioner provides services
+
+    SearchRole:
+      name: role
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Role code for the practitioner (CodeableConcept token)
+
+    SearchSpecialty:
+      name: specialty
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Specialty code for the practitioner (CodeableConcept token)
+
+    SearchService:
+      name: service
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Reference to healthcare service provided
+
+    SearchDate:
+      name: date
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Period during which the role is active (date range)
+
+    SearchCategory:
+      name: category
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Category of the healthcare service (CodeableConcept token)
+
+    SearchServiceType:
+      name: type
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Type of healthcare service (CodeableConcept token)
+
+    SearchCharacteristic:
+      name: characteristic
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Characteristic of the healthcare service (CodeableConcept token)
+
+    SearchProgram:
+      name: program
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Program under which the healthcare service is offered
+
+    SearchCoverageArea:
+      name: coverage-area
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Reference to the geographic area covered by the service
+
+    SearchServiceCategory:
+      name: service-category
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Service category (CodeableConcept token)
+
+  schemas:
+    # ===========================================
+    # Base FHIR Data Types
+    # ===========================================
+
+    uri:
+      type: string
+      format: uri
+      description: FHIR uri data type - A Uniform Resource Identifier
+
+    code:
+      type: string
+      description: FHIR code data type - A string which has at least one character and no leading or trailing whitespace
+
+    dateTime:
+      type: string
+      pattern: ^([0-9]([0-9]([0-9][1-9]|[1-9]0)|[1-9]00)|[1-9]000)(-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1])(T([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]+)?(Z|(\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00)))?)?)?$
+      description: FHIR dateTime data type - A date, date-time or partial date (e.g. year or year + month) in ISO 8601 format
+
+    instant:
+      type: string
+      format: date-time
+      description: FHIR instant data type - An instant in time in the format YYYY-MM-DDThh:mm:ss.sss+zz:zz
+
+    # ===========================================
+    # FHIR Complex Data Types
+    # ===========================================
+
+    Meta:
+      type: object
+      description: FHIR Meta - Metadata about a resource
+      properties:
+        versionId:
+          type: string
+          description: Version specific identifier
+        lastUpdated:
+          $ref: '#/components/schemas/instant'
+        source:
+          $ref: '#/components/schemas/uri'
+        profile:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: Profiles this resource claims to conform to
+        security:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coding'
+          description: Security Labels applied to this resource
+        tag:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coding'
+          description: Tags applied to this resource
+
+    Identifier:
+      type: object
+      description: FHIR Identifier - An identifier intended for computation
+      properties:
+        use:
+          type: string
+          enum:
+            - usual
+            - official
+            - temp
+            - secondary
+            - old
+          description: usual | official | temp | secondary | old
+        type:
+          $ref: '#/components/schemas/CodeableConcept'
+        system:
+          $ref: '#/components/schemas/uri'
+        value:
+          type: string
+          description: The value that is unique
+        period:
+          $ref: '#/components/schemas/Period'
+        assigner:
+          $ref: '#/components/schemas/Reference'
+
+    Coding:
+      type: object
+      description: FHIR Coding - A reference to a code defined by a terminology system
+      properties:
+        system:
+          $ref: '#/components/schemas/uri'
+        version:
+          type: string
+          description: Version of the system
+        code:
+          $ref: '#/components/schemas/code'
+        display:
+          type: string
+          description: Representation defined by the system
+        userSelected:
+          type: boolean
+          description: If this coding was chosen directly by the user
+
+    CodeableConcept:
+      type: object
+      description: FHIR CodeableConcept - Concept - reference to a terminology or just text
+      properties:
+        coding:
+          type: array
+          items:
+            $ref: '#/components/schemas/Coding'
+          description: Code defined by a terminology system
+        text:
+          type: string
+          description: Plain text representation of the concept
+
+    Period:
+      type: object
+      description: FHIR Period - Time range defined by start and end date/time
+      properties:
+        start:
+          $ref: '#/components/schemas/dateTime'
+        end:
+          $ref: '#/components/schemas/dateTime'
+
+    Reference:
+      type: object
+      description: FHIR Reference - A reference from one resource to another
+      properties:
+        reference:
+          type: string
+          description: Literal reference, Relative, internal or absolute URL
+        type:
+          $ref: '#/components/schemas/uri'
+        identifier:
+          $ref: '#/components/schemas/Identifier'
+        display:
+          type: string
+          description: Text alternative for the resource
+
+    HumanName:
+      type: object
+      description: FHIR HumanName - Name of a human - parts and usage
+      properties:
+        use:
+          type: string
+          enum:
+            - usual
+            - official
+            - temp
+            - nickname
+            - anonymous
+            - old
+            - maiden
+          description: usual | official | temp | nickname | anonymous | old | maiden
+        text:
+          type: string
+          description: Text representation of the full name
+        family:
+          type: string
+          description: Family name (often called 'Surname')
+        given:
+          type: array
+          items:
+            type: string
+          description: Given names (not always 'first'). Includes middle names
+        prefix:
+          type: array
+          items:
+            type: string
+          description: Parts that come before the name
+        suffix:
+          type: array
+          items:
+            type: string
+          description: Parts that come after the name
+        period:
+          $ref: '#/components/schemas/Period'
+
+    Address:
+      type: object
+      description: FHIR Address - An address expressed using postal conventions
+      properties:
+        use:
+          type: string
+          enum:
+            - home
+            - work
+            - temp
+            - old
+            - billing
+          description: home | work | temp | old | billing
+        type:
+          type: string
+          enum:
+            - postal
+            - physical
+            - both
+          description: postal | physical | both
+        text:
+          type: string
+          description: Text representation of the address
+        line:
+          type: array
+          items:
+            type: string
+          description: Street name, number, direction & P.O. Box etc.
+        city:
+          type: string
+          description: Name of city, town etc.
+        district:
+          type: string
+          description: District name (aka county)
+        state:
+          type: string
+          description: Sub-unit of country (abbreviations ok)
+        postalCode:
+          type: string
+          description: Postal code for area
+        country:
+          type: string
+          description: Country (e.g. can be ISO 3166 2 or 3 letter code)
+        period:
+          $ref: '#/components/schemas/Period'
+
+    ContactPoint:
+      type: object
+      description: FHIR ContactPoint - Details of a Technology mediated contact point
+      properties:
+        system:
+          type: string
+          enum:
+            - phone
+            - fax
+            - email
+            - pager
+            - url
+            - sms
+            - other
+          description: phone | fax | email | pager | url | sms | other
+        value:
+          type: string
+          description: The actual contact point details
+        use:
+          type: string
+          enum:
+            - home
+            - work
+            - temp
+            - old
+            - mobile
+          description: home | work | temp | old | mobile
+        rank:
+          type: integer
+          minimum: 1
+          description: Specify preferred order of use (1 = highest)
+        period:
+          $ref: '#/components/schemas/Period'
+
+    Attachment:
+      type: object
+      description: FHIR Attachment - Content in a format defined elsewhere
+      properties:
+        contentType:
+          $ref: '#/components/schemas/code'
+        language:
+          $ref: '#/components/schemas/code'
+        data:
+          type: string
+          format: byte
+          description: Data inline, base64ed
+        url:
+          $ref: '#/components/schemas/uri'
+        size:
+          type: integer
+          description: Number of bytes of content (if url provided)
+        hash:
+          type: string
+          format: byte
+          description: Hash of the data (sha-1, base64ed)
+        title:
+          type: string
+          description: Label to display in place of the data
+        creation:
+          $ref: '#/components/schemas/dateTime'
+
+    Narrative:
+      type: object
+      description: FHIR Narrative - Human-readable summary of the resource
+      required:
+        - status
+        - div
+      properties:
+        status:
+          type: string
+          enum:
+            - generated
+            - extensions
+            - additional
+            - empty
+          description: generated | extensions | additional | empty
+        div:
+          type: string
+          description: Limited xhtml content
+
+    # ===========================================
+    # FHIR Resource Schemas (Placeholders)
+    # ===========================================
+
+    Bundle:
+      type: object
+      description: FHIR Bundle - A container for a collection of resources
+      required:
+        - resourceType
+        - type
+      properties:
+        resourceType:
+          type: string
+          const: Bundle
+          description: This is a Bundle resource
+        id:
+          type: string
+          description: Logical id of this artifact
+        meta:
+          $ref: "#/components/schemas/Meta"
+        type:
+          type: string
+          enum:
+            - document
+            - message
+            - transaction
+            - transaction-response
+            - batch
+            - batch-response
+            - history
+            - searchset
+            - collection
+          description: document | message | transaction | transaction-response | batch | batch-response | history | searchset | collection
+        timestamp:
+          $ref: "#/components/schemas/instant"
+          description: When the bundle was assembled
+        total:
+          type: integer
+          minimum: 0
+          description: If search, the total number of matches
+        link:
+          type: array
+          description: Links related to this Bundle
+          items:
+            type: object
+            properties:
+              relation:
+                type: string
+                description: "See http://www.iana.org/assignments/link-relations/link-relations.xhtml#link-relations-1"
+                enum:
+                  - self
+                  - first
+                  - previous
+                  - next
+                  - last
+              url:
+                $ref: "#/components/schemas/uri"
+                description: Reference details for the link
+        entry:
+          type: array
+          description: Entry in the bundle - will have a resource or information
+          items:
+            type: object
+            properties:
+              fullUrl:
+                $ref: "#/components/schemas/uri"
+                description: URI for resource (Absolute URL server address or URI for UUID/OID)
+              resource:
+                type: object
+                description: Any FHIR resource
+              search:
+                type: object
+                description: Search related information
+                properties:
+                  mode:
+                    type: string
+                    enum:
+                      - match
+                      - include
+                      - outcome
+                    description: match | include | outcome - why this is in the result set
+                  score:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+                    description: Search ranking (between 0 and 1)
+              request:
+                type: object
+                description: Additional execution information (transaction/batch/history)
+                properties:
+                  method:
+                    type: string
+                    enum:
+                      - GET
+                      - HEAD
+                      - POST
+                      - PUT
+                      - DELETE
+                      - PATCH
+                    description: GET | HEAD | POST | PUT | DELETE | PATCH
+                  url:
+                    $ref: "#/components/schemas/uri"
+                    description: URL for HTTP equivalent of this entry
+              response:
+                type: object
+                description: Results of execution (transaction/batch/history)
+                properties:
+                  status:
+                    type: string
+                    description: Status response code (text optional)
+                  location:
+                    $ref: "#/components/schemas/uri"
+                    description: The location (if the operation returns a location)
+                  etag:
+                    type: string
+                    description: The Etag for the resource (if relevant)
+                  lastModified:
+                    $ref: "#/components/schemas/instant"
+                    description: Server's date time modified
+
+    OperationOutcome:
+      type: object
+      description: FHIR OperationOutcome - Information about the success/failure of an action
+      required:
+        - resourceType
+        - issue
+      properties:
+        resourceType:
+          type: string
+          const: OperationOutcome
+          description: This is an OperationOutcome resource
+        id:
+          type: string
+          description: Logical id of this artifact
+        meta:
+          $ref: "#/components/schemas/Meta"
+        issue:
+          type: array
+          minItems: 1
+          description: A single issue associated with the action
+          items:
+            type: object
+            required:
+              - severity
+              - code
+            properties:
+              severity:
+                type: string
+                enum:
+                  - fatal
+                  - error
+                  - warning
+                  - information
+                description: fatal | error | warning | information
+              code:
+                type: string
+                enum:
+                  - invalid
+                  - structure
+                  - required
+                  - value
+                  - invariant
+                  - security
+                  - login
+                  - unknown
+                  - expired
+                  - forbidden
+                  - suppressed
+                  - processing
+                  - not-supported
+                  - duplicate
+                  - multiple-matches
+                  - not-found
+                  - deleted
+                  - too-long
+                  - code-invalid
+                  - extension
+                  - too-costly
+                  - business-rule
+                  - conflict
+                  - transient
+                  - lock-error
+                  - no-store
+                  - exception
+                  - timeout
+                  - incomplete
+                  - throttled
+                  - informational
+                description: Error or warning code
+              details:
+                $ref: "#/components/schemas/CodeableConcept"
+                description: Additional details about the error
+              diagnostics:
+                type: string
+                description: Additional diagnostic information about the issue
+              location:
+                type: array
+                items:
+                  type: string
+                description: Deprecated - Path of element(s) related to issue
+                deprecated: true
+              expression:
+                type: array
+                items:
+                  type: string
+                description: FHIRPath of element(s) related to issue
+
+    Organization:
+      type: object
+      description: FHIR Organization - A formally or informally recognized grouping of people or organizations formed for the purpose of achieving some form of collective action
+      required:
+        - resourceType
+      properties:
+        resourceType:
+          type: string
+          const: Organization
+          description: This is a Organization resource
+        id:
+          type: string
+          description: Logical id of this artifact
+        meta:
+          $ref: '#/components/schemas/Meta'
+        text:
+          $ref: '#/components/schemas/Narrative'
+        identifier:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+          description: Identifies this organization across multiple systems
+        active:
+          type: boolean
+          description: Whether the organization's record is still in active use
+        type:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Kind of organization
+        name:
+          type: string
+          description: Name used for the organization
+        alias:
+          type: array
+          items:
+            type: string
+          description: A list of alternate names that the organization is known as, or was known as in the past
+        telecom:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactPoint'
+          description: A contact detail for the organization
+        address:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+          description: An address for the organization
+        partOf:
+          $ref: '#/components/schemas/Reference'
+          description: The organization of which this organization forms a part
+        contact:
+          type: array
+          items:
+            type: object
+            properties:
+              purpose:
+                $ref: '#/components/schemas/CodeableConcept'
+                description: The type of contact
+              name:
+                $ref: '#/components/schemas/HumanName'
+                description: A name associated with the contact
+              telecom:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContactPoint'
+                description: Contact details (telephone, email, etc.) for a contact
+              address:
+                $ref: '#/components/schemas/Address'
+                description: Visiting or postal addresses for the contact
+          description: Contact for the organization for a certain purpose
+        endpoint:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Technical endpoints providing access to services operated for the organization
+
+    Location:
+      type: object
+      description: FHIR Location - Details and position information for a physical place where services are provided
+      required:
+        - resourceType
+      properties:
+        resourceType:
+          type: string
+          const: Location
+          description: This is a Location resource
+        id:
+          type: string
+          description: Logical id of this artifact
+        meta:
+          $ref: '#/components/schemas/Meta'
+        text:
+          $ref: '#/components/schemas/Narrative'
+        identifier:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+          description: Unique code or number identifying the location to its users
+        status:
+          type: string
+          enum:
+            - active
+            - suspended
+            - inactive
+          description: active | suspended | inactive
+        operationalStatus:
+          $ref: '#/components/schemas/Coding'
+          description: The operational status of the location (typically only for a bed/room)
+        name:
+          type: string
+          description: Name of the location as used by humans
+        alias:
+          type: array
+          items:
+            type: string
+          description: A list of alternate names that the location is known as, or was known as in the past
+        description:
+          type: string
+          description: Additional details about the location that could be displayed as further information to identify the location beyond its name
+        mode:
+          type: string
+          enum:
+            - instance
+            - kind
+          description: instance | kind
+        type:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Type of function performed at the location (e.g., facility, jurisdiction)
+        telecom:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactPoint'
+          description: Contact details of the location
+        address:
+          $ref: '#/components/schemas/Address'
+          description: Physical location address
+        physicalType:
+          $ref: '#/components/schemas/CodeableConcept'
+          description: Physical form of the location (e.g., building, room, vehicle)
+        position:
+          type: object
+          description: The absolute geographic location of the location
+          properties:
+            longitude:
+              type: number
+              description: Longitude with WGS84 datum
+            latitude:
+              type: number
+              description: Latitude with WGS84 datum
+            altitude:
+              type: number
+              description: Altitude with WGS84 datum
+        managingOrganization:
+          $ref: '#/components/schemas/Reference'
+          description: Organization responsible for provisioning and upkeep of the location
+        partOf:
+          $ref: '#/components/schemas/Reference'
+          description: Another Location this one is physically part of
+        hoursOfOperation:
+          type: array
+          items:
+            type: object
+            properties:
+              daysOfWeek:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - mon
+                    - tue
+                    - wed
+                    - thu
+                    - fri
+                    - sat
+                    - sun
+                description: Days of the week this location is open
+              allDay:
+                type: boolean
+                description: The location is open all day
+              openingTime:
+                type: string
+                format: time
+                description: Time that the location opens
+              closingTime:
+                type: string
+                format: time
+                description: Time that the location closes
+          description: What days/times during a week is this location usually open
+        availabilityExceptions:
+          type: string
+          description: Description of availability exceptions (e.g., public holidays)
+        endpoint:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Technical endpoints providing access to services operated for the location
+
+    Practitioner:
+      type: object
+      description: FHIR Practitioner - A person who is directly or indirectly involved in the provisioning of healthcare
+      required:
+        - resourceType
+      properties:
+        resourceType:
+          type: string
+          const: Practitioner
+          description: This is a Practitioner resource
+        id:
+          type: string
+          description: Logical id of this artifact
+        meta:
+          $ref: '#/components/schemas/Meta'
+        text:
+          $ref: '#/components/schemas/Narrative'
+        identifier:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+          description: Professional licenses, registration numbers, and other identifiers for this practitioner
+        active:
+          type: boolean
+          description: Whether this practitioner's record is in active use
+        name:
+          type: array
+          items:
+            $ref: '#/components/schemas/HumanName'
+          description: The name(s) associated with the practitioner
+        telecom:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactPoint'
+          description: Contact details for the practitioner
+        address:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+          description: Address(es) of the practitioner
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+            - other
+            - unknown
+          description: Gender of the practitioner (male, female, other, unknown)
+        birthDate:
+          type: string
+          format: date
+          description: The date on which the practitioner was born
+        photo:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+          description: Image of the practitioner
+        qualification:
+          type: array
+          items:
+            type: object
+            required:
+              - code
+            properties:
+              identifier:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Identifier'
+                description: An identifier for this qualification for the practitioner
+              code:
+                $ref: '#/components/schemas/CodeableConcept'
+                description: Coded representation of the qualification
+              period:
+                $ref: '#/components/schemas/Period'
+                description: Period during which the qualification is valid
+              issuer:
+                $ref: '#/components/schemas/Reference'
+                description: Organization that regulates and issues the qualification
+          description: Qualifications, certifications, accreditations, licenses, training, etc. pertaining to the provision of care
+        communication:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Languages the practitioner can use in patient communication
+
+    PractitionerRole:
+      type: object
+      description: FHIR PractitionerRole - A specific set of Roles/Locations/specialties/services that a practitioner may perform at an organization for a period of time
+      required:
+        - resourceType
+      properties:
+        resourceType:
+          type: string
+          const: PractitionerRole
+          description: This is a PractitionerRole resource
+        id:
+          type: string
+          description: Logical id of this artifact
+        meta:
+          $ref: '#/components/schemas/Meta'
+        text:
+          $ref: '#/components/schemas/Narrative'
+        identifier:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+          description: Business identifiers for this practitioner role
+        active:
+          type: boolean
+          description: Whether this practitioner role record is in active use
+        period:
+          $ref: '#/components/schemas/Period'
+          description: Period during which the practitioner is authorized to perform in these role(s)
+        practitioner:
+          $ref: '#/components/schemas/Reference'
+          description: Practitioner that is able to provide the defined services for the organization
+        organization:
+          $ref: '#/components/schemas/Reference'
+          description: Organization where the roles are available
+        code:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Roles which this practitioner may perform
+        specialty:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Specific specialty of the practitioner
+        location:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Location(s) at which this practitioner provides care
+        healthcareService:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Healthcare services provided through this role
+        telecom:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactPoint'
+          description: Contact details that are specific to the role/location/service
+        availableTime:
+          type: array
+          items:
+            type: object
+            properties:
+              daysOfWeek:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - mon
+                    - tue
+                    - wed
+                    - thu
+                    - fri
+                    - sat
+                    - sun
+                description: Days of the week this role is available
+              allDay:
+                type: boolean
+                description: Always available (24 hours per day, 7 days per week)
+              availableStartTime:
+                type: string
+                format: time
+                description: Opening time of day (ignored if allDay = true)
+              availableEndTime:
+                type: string
+                format: time
+                description: Closing time of day (ignored if allDay = true)
+          description: Times the practitioner is available or performing this role at the location and/or healthcare service
+        notAvailable:
+          type: array
+          items:
+            type: object
+            required:
+              - description
+            properties:
+              description:
+                type: string
+                description: Reason presented to the user explaining why time not available
+              during:
+                $ref: '#/components/schemas/Period'
+                description: Service not available from this date
+          description: Not available during this time due to provided reason
+        availabilityExceptions:
+          type: string
+          description: Description of availability exceptions (e.g., public holidays)
+        endpoint:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Technical endpoints providing access to services operated for the practitioner with this role
+
+    HealthcareService:
+      type: object
+      description: >-
+        FHIR HealthcareService resource - describes healthcare services offered at a
+        Location by an Organization.
+      required:
+        - resourceType
+      properties:
+        resourceType:
+          type: string
+          const: HealthcareService
+          description: Type of resource
+        id:
+          type: string
+          description: Logical id of this artifact
+        meta:
+          $ref: '#/components/schemas/Meta'
+        text:
+          $ref: '#/components/schemas/Narrative'
+        identifier:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+          description: External identifiers for this service
+        active:
+          type: boolean
+          description: Whether this service is active and accepting new patients/clients
+        providedBy:
+          $ref: '#/components/schemas/Reference'
+          description: Organization that provides this service
+        category:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Broad category of service being performed or delivered
+        type:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Specific type of service that may be delivered or performed
+        specialty:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Specialties handled by the service
+        location:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Location(s) where service may be provided
+        name:
+          type: string
+          description: Description of service as presented to a consumer while searching
+        comment:
+          type: string
+          description: Additional description and/or any specific issues not covered elsewhere
+        extraDetails:
+          type: string
+          format: markdown
+          description: Extra details about the service that can't be placed in the other fields
+        photo:
+          $ref: '#/components/schemas/Attachment'
+          description: Facilitates quick identification of the service
+        telecom:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactPoint'
+          description: Contacts related to the healthcare service
+        coverageArea:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Location(s) service is intended for/available to
+        serviceProvisionCode:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Conditions under which service is available/offered
+        eligibility:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                $ref: '#/components/schemas/CodeableConcept'
+                description: Coded value for the eligibility
+              comment:
+                type: string
+                description: Describes the eligibility conditions for the service
+          description: Specific eligibility requirements required to use the service
+        program:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Programs that this service is applicable to
+        characteristic:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Collection of characteristics (attributes)
+        communication:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: The language that this service is offered in
+        referralMethod:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Ways that the service accepts referrals
+        appointmentRequired:
+          type: boolean
+          description: If an appointment is required for access to this service
+        availableTime:
+          type: array
+          items:
+            type: object
+            properties:
+              daysOfWeek:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - mon
+                    - tue
+                    - wed
+                    - thu
+                    - fri
+                    - sat
+                    - sun
+                description: Days of the week this service is available
+              allDay:
+                type: boolean
+                description: Always available (24 hours per day, 7 days per week)
+              availableStartTime:
+                type: string
+                format: time
+                description: Opening time of day (ignored if allDay = true)
+              availableEndTime:
+                type: string
+                format: time
+                description: Closing time of day (ignored if allDay = true)
+          description: Times the service is available
+        notAvailable:
+          type: array
+          items:
+            type: object
+            required:
+              - description
+            properties:
+              description:
+                type: string
+                description: Reason presented to the user explaining why time not available
+              during:
+                $ref: '#/components/schemas/Period'
+                description: Service not available during this period
+          description: Not available during this time due to provided reason
+        availabilityExceptions:
+          type: string
+          description: Description of availability exceptions (e.g., public holidays)
+        endpoint:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Technical endpoints providing access to electronic services operated for the healthcare service
+
+    Endpoint:
+      type: object
+      description: >-
+        FHIR Endpoint - A technical endpoint for electronic data exchange.
+        Represents connectivity details of a FHIR server, IHE web service, or other health data exchange endpoint.
+      required:
+        - resourceType
+        - status
+        - connectionType
+        - payloadType
+        - address
+      properties:
+        resourceType:
+          type: string
+          const: Endpoint
+          description: This is an Endpoint resource
+        id:
+          type: string
+          description: Logical id of this artifact
+        meta:
+          $ref: '#/components/schemas/Meta'
+        text:
+          $ref: '#/components/schemas/Narrative'
+        identifier:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+          description: Identifies this endpoint across multiple systems
+        status:
+          type: string
+          enum:
+            - active
+            - suspended
+            - error
+            - off
+            - entered-in-error
+            - test
+          description: active | suspended | error | off | entered-in-error | test
+        connectionType:
+          $ref: '#/components/schemas/Coding'
+          description: Protocol/profile/standard for exchange (e.g., hl7-fhir-rest, ihe-xca, ihe-xds, dicom-wado-rs)
+        name:
+          type: string
+          description: A name that this endpoint can be identified by
+        managingOrganization:
+          $ref: '#/components/schemas/Reference'
+          description: Organization that manages this endpoint (might not be the organization that exposes the endpoint)
+        contact:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactPoint'
+          description: Contact details for source (e.g., troubleshooting)
+        period:
+          $ref: '#/components/schemas/Period'
+          description: Interval the endpoint is expected to be operational
+        payloadType:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: The type of content that may be used at this endpoint (e.g., XDS Discharge Summaries, FHIR resources)
+        payloadMimeType:
+          type: array
+          items:
+            type: string
+          description: Mimetype to send. If not specified, the content could be anything (including no payload)
+        address:
+          type: string
+          format: uri
+          description: The technical base address for connecting to this endpoint
+        header:
+          type: array
+          items:
+            type: string
+          description: Usage depends on the channel type - additional headers or information to send as part of the notification
+
+    OrganizationAffiliation:
+      type: object
+      description: FHIR OrganizationAffiliation - Defines relationships between organizations that are not hierarchical (e.g., networks, associations)
+      required:
+        - resourceType
+      properties:
+        resourceType:
+          type: string
+          const: OrganizationAffiliation
+          description: This is an OrganizationAffiliation resource
+        id:
+          type: string
+          description: Logical id of this artifact
+        meta:
+          $ref: '#/components/schemas/Meta'
+        text:
+          $ref: '#/components/schemas/Narrative'
+        identifier:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+          description: Business identifiers that are specific to this role
+        active:
+          type: boolean
+          description: Whether this organization affiliation record is in active use
+        period:
+          $ref: '#/components/schemas/Period'
+          description: The period during which the participatingOrganization is affiliated with the primary organization
+        organization:
+          $ref: '#/components/schemas/Reference'
+          description: Organization where the role is available (primary organization/parent)
+        participatingOrganization:
+          $ref: '#/components/schemas/Reference'
+          description: Organization that provides/performs the role (e.g., member organization/subordinate/affiliate)
+        network:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Health insurance provider network in which the participatingOrganization provides the role's services (if defined) at the indicated locations (if defined)
+        code:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Definition of the role the participatingOrganization plays in the association
+        specialty:
+          type: array
+          items:
+            $ref: '#/components/schemas/CodeableConcept'
+          description: Specific specialty of the participatingOrganization in the context of the role
+        location:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: The location(s) at which the role occurs
+        healthcareService:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Healthcare services provided through the role
+        telecom:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactPoint'
+          description: Contact details at the participatingOrganization relevant to this Affiliation
+        endpoint:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+          description: Technical endpoints providing access to services operated for this role

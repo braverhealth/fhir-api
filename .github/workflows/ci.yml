@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.tool-versions'
+
+      - name: Install Redocly CLI
+        run: npm install -g @redocly/cli
+
+      - name: Validate FHIR Communication schema
+        run: redocly lint schema/fhir-communication.yml
+
+      - name: Validate Service Directory schema
+        run: redocly lint schema/fhir-service-directory.yml
+
