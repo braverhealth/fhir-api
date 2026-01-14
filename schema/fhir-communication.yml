@@ -19,7 +19,7 @@ info:
     ## FHIR Specification
 
     Based on FHIR R4B (v4.3.0) Communication resource.
-    See: https://www.hl7.org/fhir/R4B/communication.html
+    See: [https://www.hl7.org/fhir/R4B/communication.html](https://www.hl7.org/fhir/R4B/communication.html)
 
 
     ## Security Model

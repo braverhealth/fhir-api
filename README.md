@@ -6,7 +6,7 @@
 
 La documentation interactive des APIs est automatiquement déployée sur **GitHub Pages** à chaque push sur la branche `main`.
 
-**URL** : https://braverhealth.github.io/fhir_comm/
+**URL** : https://braverhealth.github.io/fhir-api/
 
 ---
 
